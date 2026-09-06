@@ -1,0 +1,4 @@
+forward pedal: Type: 3 (EV_ABS), Code: 5 (ABS_RZ)
+Reverse pedal: type 3 (EV_ABS), code 2 (ABS_Z)
+Left turn: type 3 (EV_ABS), code 0 (ABS_X) -
+Right turn: type 3 (EV_ABS), code 0 (ABS_X) +
