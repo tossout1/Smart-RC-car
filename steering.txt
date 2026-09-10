@@ -1,0 +1,22 @@
+read script steering:
+const int rcPin = 2; // Signal wire connected to Digital Pin 2
+
+void setup() {
+  pinMode(rcPin, INPUT);
+  Serial.begin(9600);
+  Serial.println("--- Starting Traxxas Signal Test ---");
+}
+
+void loop() {
+  // Read the raw microsecond pulse with an increased 50ms timeout
+  unsigned long rawPulse = pulseIn(rcPin, HIGH, 50000); 
+  
+  // Print the raw value exactly as it is received
+  Serial.print("Raw Pulse Width: ");
+  Serial.print(rawPulse);
+  Serial.println(" us");
+
+  delay(100); 
+}
+
+steering signals: {1984-1537} = left {1531-1537} = neutral right = {1531-1039}

@@ -22,7 +22,7 @@ for line in proc.stdout:
         event_code_name = match.group(5)
         event_value = match.group(6)
 
-        payload_bytes = json.dumps({event_code_name: int(event_value)}).encode('utf-8')
+        payload_bytes = (json.dumps({event_code_name: int(event_value)})+"\n").encode('utf-8')
         if ser:
             ser.write(payload_bytes)
             ser.flush()
