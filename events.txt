@@ -12,7 +12,7 @@ Event type 0 (EV_SYN)
     Event code 317 (BTN_THUMBL)
     Event code 318 (BTN_THUMBR)
   Event type 3 (EV_ABS)
-    Event code 0 (ABS_X)
+    Event code 0 (ABS_X) steering left negative
       Value      0
       Min   -32768
       Max    32767
