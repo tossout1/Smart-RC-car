@@ -47,7 +47,7 @@ uint8_t calculateBackwardThrottle(int S) {
     return static_cast<uint8_t>((((1492 - S) * 255) + 248) / 496);
 }
 
-int SteeringWheel() {
+int CarWheel() {
   if (wirelessSerial.available() > 0) {
      String jsonPayload = WirelessSerial.readStringUntil('\n');
      jsonPayload.trim(); 
