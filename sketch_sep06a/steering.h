@@ -7,7 +7,7 @@ static void setupSteering() {
   Serial.println("--- Starting Traxxas Signal Test ---");
 }
 
-unsigned long steering() {
+unsigned long Steering() {
   // Read the raw microsecond pulse with an increased 50ms timeout
   unsigned long rawPulse = pulseIn(rcPin, HIGH, 50000); 
   

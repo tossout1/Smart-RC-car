@@ -4,11 +4,17 @@
 #include <stdint.h>
 #include "steering.h"
 #include "ESC.h"
+#include<Servo.h>
 
 const int inputSteering = 3;
 const int outputSteering = 4;
 const int inputDrive = 5;
 const int outputDrive = 6;
+unsigned long steeringValue;
+uint8_t forwardThrottle;
+uint8_t backwardThrottle;
+Servo steeringOutput;
+Servo driveOutput;
 SoftwareSerial wirelessSerial(8, 9);
 
 int clampValue(int value, int min, int max) {
@@ -19,17 +25,17 @@ int clampValue(int value, int min, int max) {
 
 void setup() {
   pinMode(inputSteering, INPUT);
-  pinMode(outputSteering, OUTPUT);
   pinMode(inputDrive, INPUT);
-  pinMode(outputDrive, OUTPUT);
   Serial.begin(9600);
   wirelessSerial.begin(9600);
   Serial.println("Started serial connection on 9600.");
+  steeringOutput.attach(outputSteering);
+  driveOutput.attach(outputDrive);
   }
 
 int RCcontroller() {
-  digitalWrite(outputSteering, Steering());
-  digitalWrite(outputDrive, ESC());
+  steeringOutput.writeMicroseconds(Steering());
+  driveOutput.writeMicroseconds(ESC());
 }
 
 int16_t calculateSteering(int S) {
@@ -52,7 +58,7 @@ uint8_t calculateForwardThrottle(int S) {
 
 uint8_t calculateBackwardThrottle(int S) {
     // Clamp to ensure the input stays within the designated backward window
-    S = clamp(S, 996, 1492);
+    S = clampValue(S, 996, 1492);
     
     // Process math with rounding (+248 is half of the 496 divisor)
     return static_cast<uint8_t>((((1492 - S) * 255) + 248) / 496);
@@ -86,20 +92,24 @@ void CarWheel() {
         Serial.println(eventValue);
 
         if (eventCodeName == "ABS_X") {
-          Steering = calculateSteering(eventValue);
+          int Steering = calculateSteering(eventValue);
           digitalWrite(outputSteering, Steering);
         }
 
         if (eventCodeName == "ABS_RZ") {
-          ForwardThrottle = calculateForwardThrottle(eventValue);
+          int ForwardThrottle = calculateForwardThrottle(eventValue);
           digitalWrite(outputDrive, ForwardThrottle);
         }
 
         if (eventCodeName == "ABS_Z") {
-          BackwardThrottle = calculateBackwardThrottle(eventValue);
+          int BackwardThrottle = calculateBackwardThrottle(eventValue);
           digitalWrite(outputDrive, BackwardThrottle);
         }
       }
     }
   }
 }
+
+void loop() {
+  RCcontroller();
+  }
