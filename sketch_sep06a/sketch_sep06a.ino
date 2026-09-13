@@ -52,48 +52,49 @@ uint8_t calculateForwardThrottle(int S) {
 
 uint8_t calculateBackwardThrottle(int S) {
     // Clamp to ensure the input stays within the designated backward window
-    S = clampValue(S, 996, 1492);
+    S = clamp(S, 996, 1492);
     
     // Process math with rounding (+248 is half of the 496 divisor)
     return static_cast<uint8_t>((((1492 - S) * 255) + 248) / 496);
 }
 
-int CarWheel() {
+void CarWheel() {
   if (wirelessSerial.available() > 0) {
-     String jsonPayload = wirelessSerial.readStringUntil('\n');
-     jsonPayload.trim(); 
-      if (jsonPayload.length() > 0) {
-      // 2. Allocate memory for the JSON document (V7 syntax)
-      JsonDocument doc;
 
-      // 3. Parse the string
-      DeserializationError error = deserializeJson(doc, jsonPayload);
+    String jsonPayload = wirelessSerial.readStringUntil('\n');
+    jsonPayload.trim();
 
-      if (error) {
-        Serial.print("Parsing failed: ");
-        Serial.println(error.f_str());
-        return; 
+    if (jsonPayload.length() > 0) {
+
+      JSONVar doc = JSON.parse(jsonPayload);
+
+      if (JSON.typeof(doc) == "undefined") {
+        Serial.println("Parsing failed");
+        return;
       }
 
-      // 4. Extract the dynamic key and integer value
-      JsonObject root = doc.as<JsonObject>();
-      for (JsonPair kv : root) {
-        String eventCodeName = kv.key().c_str();
-        int eventValue = kv.value().as<int>();
+      JSONVar keys = doc.keys();
 
-        // Print results to your standard USB Serial Monitor
+      for (int i = 0; i < keys.length(); i++) {
+
+        String eventCodeName = (const char*)keys[i];
+        int eventValue = (int)doc[eventCodeName];
+
         Serial.print("Event Received -> [");
         Serial.print(eventCodeName);
         Serial.print("]: ");
         Serial.println(eventValue);
+
         if (eventCodeName == "ABS_X") {
           Steering = calculateSteering(eventValue);
           digitalWrite(outputSteering, Steering);
         }
+
         if (eventCodeName == "ABS_RZ") {
           ForwardThrottle = calculateForwardThrottle(eventValue);
           digitalWrite(outputDrive, ForwardThrottle);
         }
+
         if (eventCodeName == "ABS_Z") {
           BackwardThrottle = calculateBackwardThrottle(eventValue);
           digitalWrite(outputDrive, BackwardThrottle);

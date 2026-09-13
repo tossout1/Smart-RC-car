@@ -26,7 +26,7 @@ void setupESC() {
   attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
 }
 
-void ESC() {
+int ESC() {
   int localThrottle;
   
   // Temporarily disable interrupts to safely copy volatile data without corruption
@@ -43,4 +43,5 @@ void ESC() {
   // int throttlePercent = map(localThrottle, 1000, 2000, -100, 100);
 
   delay(50); // Small delay to keep the Serial Monitor readable
+  return localThrottle; // Return the raw pulse width for further processing
 }
