@@ -1,14 +1,21 @@
+#include <Arduino_JSON.h>
 #include <SoftwareSerial.h>
-#include <ArduinoJson.h>
 #include <Arduino.h>
-#include <algorithm> // For std::clamp
-#include <cstdint>
+#include <stdint.h>
+#include "steering.h"
+#include "ESC.h"
 
-const inputSteering = 2;
-const outputSteering = 3;
-const inputDrive = 4;
-const outputDrive = 5;
+const int inputSteering = 3;
+const int outputSteering = 4;
+const int inputDrive = 5;
+const int outputDrive = 6;
 SoftwareSerial wirelessSerial(8, 9);
+
+int clampValue(int value, int min, int max) {
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
+}
 
 void setup() {
   pinMode(inputSteering, INPUT);
@@ -17,9 +24,13 @@ void setup() {
   pinMode(outputDrive, OUTPUT);
   Serial.begin(9600);
   wirelessSerial.begin(9600);
-  Serial.println("Started serial connection on 9600.")
+  Serial.println("Started serial connection on 9600.");
   }
 
+int RCcontroller() {
+  digitalWrite(outputSteering, Steering());
+  digitalWrite(outputDrive, ESC());
+}
 
 int16_t calculateSteering(int S) {
     if (S >= 1531 && S <= 1537) return 0;
@@ -41,7 +52,7 @@ uint8_t calculateForwardThrottle(int S) {
 
 uint8_t calculateBackwardThrottle(int S) {
     // Clamp to ensure the input stays within the designated backward window
-    S = std::clamp(S, 996, 1492);
+    S = clampValue(S, 996, 1492);
     
     // Process math with rounding (+248 is half of the 496 divisor)
     return static_cast<uint8_t>((((1492 - S) * 255) + 248) / 496);
@@ -49,7 +60,7 @@ uint8_t calculateBackwardThrottle(int S) {
 
 int CarWheel() {
   if (wirelessSerial.available() > 0) {
-     String jsonPayload = WirelessSerial.readStringUntil('\n');
+     String jsonPayload = wirelessSerial.readStringUntil('\n');
      jsonPayload.trim(); 
       if (jsonPayload.length() > 0) {
       // 2. Allocate memory for the JSON document (V7 syntax)
