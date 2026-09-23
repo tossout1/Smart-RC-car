@@ -1,10 +1,9 @@
 // Define the throttle input pin (Pin 2 is an Interrupt pin on Uno/Nano)
-const int THROTTLE_PIN = 5;
+const int THROTTLE_PIN = 2;
 
 // Volatile variables to handle values inside the Interrupt Service Routine (ISR)
 volatile unsigned long throttle_start = 0;
-volatile int throttle_pulse_width = 1500; // Defaults to neutral
-
+volatile int throttle_pulse_width = 1500;
 
 // Interrupt Service Routine for Channel 2 (Throttle)
 void readThrottle() {
@@ -17,13 +16,12 @@ void readThrottle() {
 }
 
 
-void setupESC() {
-  Serial.begin(115200); // Fast baud rate for clean serial plotting
-  
+void setupESC() {  
   pinMode(THROTTLE_PIN, INPUT);
   
   // Attach interrupt to detect any change in signal (High to Low or Low to High)
   attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
+  Serial.print("Set up");
 }
 
 int ESC() {
@@ -32,16 +30,17 @@ int ESC() {
   // Temporarily disable interrupts to safely copy volatile data without corruption
   noInterrupts();
   localThrottle = throttle_pulse_width;
+  Serial.print("localThrottle");
   interrupts();
   
   // Print out the decoded microsecond values to the Serial Monitor
-  Serial.print("Throttle (Ch2): ");
+  Serial.print("Throttle: ");
   Serial.print(localThrottle);
-  Serial.println(" us");
+  Serial.print("\n");
 
   // Optional: Map this value to a standard -100 (Full Reverse) to 100 (Full Forward) range
   // int throttlePercent = map(localThrottle, 1000, 2000, -100, 100);
 
-  delay(50); // Small delay to keep the Serial Monitor readable
+  delay(100); // Small delay to keep the Serial Monitor readable
   return localThrottle; // Return the raw pulse width for further processing
 }

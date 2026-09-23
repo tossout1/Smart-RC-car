@@ -8,7 +8,7 @@
 
 const int inputSteering = 3;
 const int outputSteering = 4;
-const int inputDrive = 5;
+const int inputDrive = 2;
 const int outputDrive = 6;
 unsigned long steeringValue;
 uint8_t forwardThrottle;
@@ -24,6 +24,9 @@ int clampValue(int value, int min, int max) {
 }
 
 void setup() {
+    pinMode(inputDrive, INPUT);
+  // Attach interrupt to detect any change in signal (High to Low or Low to High)
+  attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
   pinMode(inputSteering, INPUT);
   pinMode(inputDrive, INPUT);
   Serial.begin(9600);
