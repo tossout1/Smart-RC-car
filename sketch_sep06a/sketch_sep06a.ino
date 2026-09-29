@@ -16,7 +16,6 @@ uint8_t backwardThrottle;
 Servo steeringOutput;
 Servo driveOutput;
 SoftwareSerial wirelessSerial(8, 9);
-
 int clampValue(int value, int min, int max) {
     if (value < min) return min;
     if (value > max) return max;
@@ -24,7 +23,7 @@ int clampValue(int value, int min, int max) {
 }
 
 void setup() {
-    pinMode(inputDrive, INPUT);
+    pinMode(inputDrive, INPUT_PULLUP);
   // Attach interrupt to detect any change in signal (High to Low or Low to High)
   attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
   pinMode(inputSteering, INPUT);
