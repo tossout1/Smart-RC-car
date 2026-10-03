@@ -28,8 +28,6 @@ int ESC() {
   Serial.print("Percent: ");
   Serial.print(throttlePercent);
   Serial.println("%");
-
-  delay(50); // Small delay to keep the Serial Monitor readable
   return localThrottle;
 }
 
