@@ -23,7 +23,6 @@ int clampValue(int value, int min, int max) {
 }
 
 void setup() {
-    pinMode(inputDrive, INPUT_PULLUP);
   // Attach interrupt to detect any change in signal (High to Low or Low to High)
   attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
   pinMode(inputSteering, INPUT);
