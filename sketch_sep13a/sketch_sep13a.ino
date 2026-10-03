@@ -3,43 +3,56 @@ const int THROTTLE_PIN = 2;
 
 // Volatile variables to handle values inside the Interrupt Service Routine (ISR)
 volatile unsigned long throttle_start = 0;
-volatile int throttle_pulse_width = 1500; // Defaults to neutral
+volatile int throttle_pulse_width = 1500; // Defaults to neutral (1500 us)
 
 void setup() {
-  Serial.begin(9600); // Fast baud rate for clean serial plotting
+  Serial.begin(115200); // Upgraded to 115200 for faster communication and less ISR latency
+  pinMode(THROTTLE_PIN, INPUT_PULLUP); // Use PULLUP to prevent floating pin behavior if disconnected
   
-  pinMode(THROTTLE_PIN, INPUT);
-  
-  // Attach interrupt to detect any change in signal (High to Low or Low to High)
+  // Attach interrupt to detect any change in signal
   attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
 }
 
 void loop() {
   int localThrottle;
-  
-  // Temporarily disable interrupts to safely copy volatile data without corruption
+
+  // Critical section: safely copy volatile data without corruption
   noInterrupts();
-  Serial.print(throttle_pulse_width);
   localThrottle = throttle_pulse_width;
   interrupts();
-  
-  // Print out the decoded microsecond values to the Serial Monitor
+
+  // Constrain the value to valid RC pulse widths to ignore spikes/glitches
+  localThrottle = constrain(localThrottle, 900, 2100);
+
+  // Print out the decoded microsecond values
   Serial.print("Throttle (Ch2): ");
   Serial.print(localThrottle);
-  Serial.println(" us");
+  Serial.print(" us\t");
 
-  // Optional: Map this value to a standard -100 (Full Reverse) to 100 (Full Forward) range
-  // int throttlePercent = map(localThrottle, 1000, 2000, -100, 100);
+  // Map to a standard -100 to 100 range
+  int throttlePercent = map(localThrottle, 1000, 2000, -100, 100);
+  throttlePercent = constrain(throttlePercent, -100, 100); // Ensure it stays within bounds
+  
+  Serial.print("Percent: ");
+  Serial.print(throttlePercent);
+  Serial.println("%");
 
   delay(50); // Small delay to keep the Serial Monitor readable
 }
 
 // Interrupt Service Routine for Channel 2 (Throttle)
 void readThrottle() {
+  unsigned long current_time = micros();
+  
   if (digitalRead(THROTTLE_PIN) == HIGH) {
-    throttle_start = micros(); // Signal went HIGH, record the time
+    throttle_start = current_time; // Signal went HIGH, record the time
   } else {
     // Signal went LOW, calculate the difference
-    throttle_pulse_width = (int)(micros() - throttle_start);
+    long duration = current_time - throttle_start;
+    
+    // Basic glitch filtering: only update if the pulse width is physically possible for an RC receiver
+    if (duration >= 800 && duration <= 2200) {
+      throttle_pulse_width = (int)duration;
+    }
   }
 }

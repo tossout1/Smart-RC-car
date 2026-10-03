@@ -27,11 +27,14 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
   pinMode(inputSteering, INPUT);
   pinMode(inputDrive, INPUT);
-  Serial.begin(9600);
   wirelessSerial.begin(9600);
   Serial.println("Started serial connection on 9600.");
   steeringOutput.attach(outputSteering);
   driveOutput.attach(outputDrive);
+  Serial.begin(115200); // Upgraded to 115200 for faster communication and less ISR latency
+  pinMode(THROTTLE_PIN, INPUT_PULLUP); // Use PULLUP to prevent floating pin behavior if disconnected
+  // Attach interrupt to detect any change in signal
+  attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
   }
 
 int RCcontroller() {
