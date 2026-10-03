@@ -159,3 +159,7 @@ python main.py```
 2. Unplug the battery from the ESC
 3. Unplug the USB-B cable from the Arduino 
 4. In the terminal you ran the run command click Ctrl+C on your keyboard
+
+# IMPORTANT
+1. Due to occasional glitches a few seconds after the ESC is powered occasionally the motor may spin automatically but only once in that power cycle. To prevent this from ruining anything simply hold the rear bumper off the ground so the tires are off the ground and wait 10 seconds to make sure a glitch doesn't happen.
+2. If the controller is turned off while there are signals the motor will start slowing down to a stop and the steering will stay at it's last position.
