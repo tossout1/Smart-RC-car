@@ -12,8 +12,8 @@ unsigned long Steering() {
   unsigned long rawPulse = pulseIn(steerPin, HIGH, 50000); 
   
   // Print the raw value exactly as it is received
-  Serial.print("Steering Raw Pulse Width: ");
-  Serial.print(rawPulse);
-  Serial.println(" us"); 
+  //Serial.print("Steering Raw Pulse Width: ");
+  //Serial.print(rawPulse);
+  //Serial.println(" us"); 
   return rawPulse;
 }
