@@ -1,10 +1,10 @@
 import subprocess, json, re, serial
 try:
-    ser = serial.Serial('COM3', 9600, timeout=1)
+    ser = serial.Serial('/dev/serial0', 9600, timeout=1)
 except serial.SerialException as e:
     print("Error opening serial port:", e)
     ser = None
-proc = subprocess.Popen(["evtest", "/dev/input/event6"], stdout=subprocess.PIPE, text=True, bufsize=1)
+proc = subprocess.Popen(["evtest", "/dev/input/event11"], stdout=subprocess.PIPE, text=True, bufsize=1)
 pattern = r"Event:\s+time\s+([\d\.]+),\s+(?:type\s+(\d+)\s+\(([^)]+)\),\s+code\s+(\d+)\s+\(([^)]+)\),\s+value\s+(-?\d+)|-+\s+(SYN_REPORT)\s+-+)"
 
 for line in proc.stdout:
