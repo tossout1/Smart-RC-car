@@ -27,7 +27,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(THROTTLE_PIN), readThrottle, CHANGE);
   pinMode(inputSteering, INPUT);
   pinMode(inputDrive, INPUT);
-  wirelessSerial.begin(9600);
+  wirelessSerial.begin(38400);
   steeringOutput.attach(outputSteering);
   driveOutput.attach(outputDrive);
   Serial.begin(115200); // Upgraded to 115200 for faster communication and less ISR latency

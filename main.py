@@ -1,6 +1,6 @@
 import subprocess, json, re, serial
 try:
-    ser = serial.Serial('/dev/serial0', 9600, timeout=1)
+    ser = serial.Serial('/dev/serial0', 38400, timeout=1)
 except serial.SerialException as e:
     print("Error opening serial port:", e)
     ser = None
