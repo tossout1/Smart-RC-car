@@ -15,7 +15,7 @@ uint8_t forwardThrottle;
 uint8_t backwardThrottle;
 Servo steeringOutput;
 Servo driveOutput;
-SoftwareSerial wirelessSerial(8, 9);
+SoftwareSerial wirelessSerial(10, 11);
 int clampValue(int value, int min, int max) {
     if (value < min) return min;
     if (value > max) return max;
@@ -71,7 +71,7 @@ uint8_t calculateBackwardThrottle(int S) {
 
 void CarWheel() {
   if (wirelessSerial.available() > 0) {
-
+    Serial.print("Available");
     String jsonPayload = wirelessSerial.readStringUntil('\n');
     jsonPayload.trim();
 
@@ -116,5 +116,5 @@ void CarWheel() {
 }
 
 void loop() {
-  RCcontroller();
+  CarWheel();
   }
